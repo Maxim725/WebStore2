@@ -10,6 +10,7 @@
     <table class="table">
         <thead>
             <tr>
+                <th></th>
                 <th>
                     id
                 </th>
@@ -23,9 +24,13 @@
             @foreach (var item in Model)
             {
                 <tr>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@i" class="btn btn-default">Details</a>
+                    </td>
                     <td>@(i++)</td>
                     <td>@item</td>
                 </tr>
+                
             }
         </tbody>
     </table>

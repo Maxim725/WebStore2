@@ -18,5 +18,11 @@ namespace WebStore.Controllers
         {
             return View(_valueService.Get());
         }
+
+        [HttpGet]
+        public IActionResult Details(int id)
+        {
+            return View("Details",_valueService.Get(id));
+        }
     }
 }
