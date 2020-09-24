@@ -15,7 +15,7 @@ namespace WebStore.Clients.Orders
     {        
         public OrdersClient(IConfiguration configuration) : base(configuration, WebAPI.Orders) { }
 
-        public async Task<IEnumerable<OrderDTO>> GetUserOrder(string userName) =>
+        public async Task<IEnumerable<OrderDTO>> GetUserOrders(string userName) =>
             await GetAsync<IEnumerable<OrderDTO>>($"{_serviceAddress}/user/{userName}");
 
         public async Task<OrderDTO> GetOrderById(int id) =>
@@ -27,6 +27,5 @@ namespace WebStore.Clients.Orders
 
             return await response.Content.ReadAsAsync<OrderDTO>();
         }
-
     }
 }
