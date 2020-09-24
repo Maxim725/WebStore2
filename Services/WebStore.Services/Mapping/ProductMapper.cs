@@ -42,5 +42,8 @@ namespace WebStore.Services.Mapping
             Brand = product.Brand.FromDTO(),
             Section = product.Section.FromDTO()
         };
+
+        public static IEnumerable<ProductDTO> ToDTO(this IEnumerable<Product> products) => products.Select(ToDTO);
+        public static IEnumerable<Product> FromDTO(this IEnumerable<ProductDTO> products) => products.Select(FromDTO);
     }
 }
