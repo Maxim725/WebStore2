@@ -12,7 +12,7 @@ namespace WebStore.Services.Products
     {
         public static IServiceCollection AddWebStoreServices(this IServiceCollection services)
         {
-            services.AddSingleton<IEmployeesData, SqlEmployeesData>();
+            services.AddScoped<IEmployeesData, SqlEmployeesData>();
             services.AddScoped<IProductData, SqlProductData>();
             services.AddScoped<IOrderService, SqlOrderService>();
             services.AddScoped<ICartService, CookiesCartService>();
