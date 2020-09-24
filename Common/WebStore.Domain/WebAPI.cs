@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using WebStore.Domain.ViewModels;
+
+namespace WebStore.Domain
+{
+    public static class WebAPI
+    {
+        public const string Employees = "api/employees";
+        public const string Products = "api/products";
+    }
+}
