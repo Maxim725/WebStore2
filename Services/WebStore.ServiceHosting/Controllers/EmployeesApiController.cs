@@ -58,7 +58,8 @@ namespace WebStore.ServiceHosting.Controllers
             return result;
         }
 
-        //[NonAction]
+        // Если не указывать, то Swagger не будет работать, т. к. неоднозначный запрос к методу, вот
+        [NonAction]
         public void SaveChanges()
         {
             _employeesData.SaveChanges();
