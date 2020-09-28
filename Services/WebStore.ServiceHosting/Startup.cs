@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -90,6 +91,19 @@ namespace WebStore.ServiceHosting
                     Title = "WebStore.API",
                     Version = "v1"
                 });
+
+                const string webDomainXML = "WebStore.Domain.xml";
+                const string webApiXml = "WebStore.ServiceHosting.xml";
+                const string debugPath = "bin/debug/netcoreapp3.1";
+
+                opt.IncludeXmlComments(webApiXml);
+
+                if (File.Exists(webDomainXML))
+                    opt.IncludeXmlComments(webDomainXML);
+                else if (File.Exists(Path.Combine(debugPath, webDomainXML)))
+                    opt.IncludeXmlComments(Path.Combine(debugPath, webDomainXML));
+
+
             });
 
             services.AddControllers();
