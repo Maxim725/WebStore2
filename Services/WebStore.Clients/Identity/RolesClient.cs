@@ -11,11 +11,11 @@ using WebStore.Domain.Entities.Identity;
 using WebStore.Interfaces.Services;
 using System.Net.Http;
 
-namespace WebStore.Clients.Roles
+namespace WebStore.Clients.Identity
 {
     public class RolesClient : BaseClient, IRolesClient
     {
-        public RolesClient(IConfiguration configuration) : base(configuration, WebAPI.Identity.Roles) 
+        public RolesClient(IConfiguration configuration) : base(configuration, WebAPI.Identity.Roles)
         { }
 
         #region IRoleStore<Role>
