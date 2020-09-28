@@ -14,6 +14,7 @@ namespace WebStore.Controllers
         {
             _valueService = valueService;
         }
+        [HttpGet]
         public IActionResult Index()
         {
             return View(_valueService.Get());
