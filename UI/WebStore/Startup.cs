@@ -32,12 +32,7 @@ namespace WebStore
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<WebStoreDB>(opt => 
-                opt.UseSqlServer(_Configuration.GetConnectionString("DefaultConnection")));
-            services.AddTransient<WebStoreDBInitializer>();
-
             services.AddIdentity<User, Role>(opt => {  })
-               //.AddEntityFrameworkStores<WebStoreDB>()
                .AddDefaultTokenProviders();
 
             // Собственная реализация хранилища
@@ -99,9 +94,8 @@ namespace WebStore
             services.AddScoped<IValueService, ValuesClient>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, WebStoreDBInitializer db)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-           db.Initialize();
 
             if (env.IsDevelopment())
             {
