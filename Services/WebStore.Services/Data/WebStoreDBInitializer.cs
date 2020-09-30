@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using WebStore.DAL.Context;
 using WebStore.Domain.Entities.Identity;
 
@@ -13,12 +15,15 @@ namespace WebStore.Services.Data
         private readonly WebStoreDB _db;
         private readonly UserManager<User> _UserManager;
         private readonly RoleManager<Role> _RoleManager;
+        private readonly ILogger<WebStoreDBInitializer> _logger;
 
-        public WebStoreDBInitializer(WebStoreDB db, UserManager<User> UserManager, RoleManager<Role> RoleManager)
+        public WebStoreDBInitializer(WebStoreDB db, UserManager<User> UserManager, RoleManager<Role> RoleManager, 
+            ILogger<WebStoreDBInitializer> logger)
         {
             _db = db;
             _UserManager = UserManager;
             _RoleManager = RoleManager;
+            _logger = logger;
         }
 
         public void Initialize()
@@ -29,17 +34,35 @@ namespace WebStore.Services.Data
             //    if(!db.EnsureCreated())
             //        throw new InvalidOperationException("Ошибка при создании БД");
 
+            try
+            {
+            _logger.LogInformation("Проведение миграций БД");
             db.Migrate();
 
+            _logger.LogInformation("Инициализация каталога товаров");
             InitializeProducts();
+
+            _logger.LogInformation("Инициализация сотрудников");
             InitializeEmployees();
+
+            _logger.LogInformation("Инициализация данных в системе Identity");
             InitializeIdentityAsync().Wait();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogCritical(new EventId(0), ex, "Ошибка процесса инициализации БД");
+
+                throw;
+            }
         }
 
         private void InitializeProducts()
         {
-            if (_db.Products.Any()) return;
-
+            if (_db.Products.Any())
+            {
+                _logger.LogInformation("Каталог товаров инициализарован");
+                return;
+            }
             var db = _db.Database;
             using (db.BeginTransaction())
             {
@@ -136,8 +159,11 @@ namespace WebStore.Services.Data
 
         private void InitializeEmployees()
         {
-            if (_db.Employees.Any()) return;
-
+            if (_db.Employees.Any())
+            {
+                _logger.LogInformation("Сотрудники уже инициализированы");
+                return;
+            }
             using (_db.Database.BeginTransaction())
             {
                 TestData.Employees.ForEach(employee => employee.Id = 0);
@@ -155,7 +181,10 @@ namespace WebStore.Services.Data
             async Task CheckRoleExist(string RoleName)
             {
                 if (!await _RoleManager.RoleExistsAsync(RoleName))
+                {
+                    _logger.LogInformation("Добавление роли пользователей {0}", RoleName);
                     await _RoleManager.CreateAsync(new Role { Name = RoleName });
+                }
             }
 
             await CheckRoleExist(Role.Administrator);
@@ -166,7 +195,11 @@ namespace WebStore.Services.Data
                 var admin = new User { UserName = User.Administrator };
                 var creation_result = await _UserManager.CreateAsync(admin, User.DefaultAdminPassword);
                 if (creation_result.Succeeded)
+                {
+                    _logger.LogInformation("Пользователь {0} добавлен", User.Administrator);
                     await _UserManager.AddToRoleAsync(admin, Role.Administrator);
+                    _logger.LogInformation("Пользователю {0} добавлена роль {1}", Role.Administrator)
+                }
                 else
                 {
                     var errors = creation_result.Errors.Select(e => e.Description);
