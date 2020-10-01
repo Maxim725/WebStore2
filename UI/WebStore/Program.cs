@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Json;
+using System;
 
 namespace WebStore
 {
@@ -22,6 +27,15 @@ namespace WebStore
                     // log.AddProvider();
                     // log.AddFilter(level => level >= LogLevel.Information); // Фильтр по типам ошибки
                     // log.AddFilter("Microsoft", level => level >= LogLevel.Information); // По категориям
-                }));
+                })
+                .UseSerilog((host, log) =>
+                    log.ReadFrom.Configuration(host.Configuration)
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+                .Enrich.FromLogContext()
+                .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss.fff zzz} {SourceContext} [{Level}]{NewLine}{Message}{NewLine}{Exception}")
+                .WriteTo.RollingFile($@".\Log\WebStore[{DateTime.Now:yyyy-mm-ddTHH-mm-ss}].log")
+                .WriteTo.File(new JsonFormatter(",", true, null), $@".\Log\WebStore[{DateTime.Now:yyyy-mm-ddTHH-mm-ss}].log.json")
+                ));
     }
 }
