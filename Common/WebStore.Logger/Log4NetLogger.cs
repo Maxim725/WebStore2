@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace WebStore.Logger
 {
-    public class Log4NetLogger : ILogger
+    public class Log4NetLogger : Microsoft.Extensions.Logging.ILogger
     {
         private readonly ILog _log;
         public Log4NetLogger(string category, XmlElement xmlConfiguration)
