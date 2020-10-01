@@ -27,7 +27,7 @@ namespace WebStore
                     // log.AddProvider();
                     // log.AddFilter(level => level >= LogLevel.Information); // Фильтр по типам ошибки
                     // log.AddFilter("Microsoft", level => level >= LogLevel.Information); // По категориям
-                })
+                }))
                 .UseSerilog((host, log) =>
                     log.ReadFrom.Configuration(host.Configuration)
                 .MinimumLevel.Debug()
@@ -36,6 +36,7 @@ namespace WebStore
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss.fff zzz} {SourceContext} [{Level}]{NewLine}{Message}{NewLine}{Exception}")
                 .WriteTo.RollingFile($@".\Log\WebStore[{DateTime.Now:yyyy-mm-ddTHH-mm-ss}].log")
                 .WriteTo.File(new JsonFormatter(",", true, null), $@".\Log\WebStore[{DateTime.Now:yyyy-mm-ddTHH-mm-ss}].log.json")
-                ));
+                .WriteTo.Seq("http://localhost:5341/")
+                );
     }
 }
