@@ -23,6 +23,7 @@ using WebStore.Services.Data;
 using WebStore.Services.Products.InCookies;
 using WebStore.Services.Products.InSQL;
 using WebStore.Logger;
+using WebStore.Infrastructure.Middleware;
 
 namespace WebStore
 {
@@ -106,6 +107,7 @@ namespace WebStore
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
+            app.UseMiddleware<ErrorHandlingMIddleware>();
 
             app.UseStaticFiles();
             app.UseDefaultFiles();
