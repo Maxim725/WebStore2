@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using WebStore.DAL.Context;
 using WebStore.Domain.Entities.Identity;
 using WebStore.Interfaces.Services;
@@ -20,6 +22,7 @@ using WebStore.Services.Data;
 using WebStore.Services.Products;
 using WebStore.Services.Products.InCookies;
 using WebStore.Services.Products.InSQL;
+using WebStore.Logger;
 
 namespace WebStore.ServiceHosting
 {
@@ -80,7 +83,29 @@ namespace WebStore.ServiceHosting
             // Сервис нужен для работы корзины
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            // Добавление сервисов сваггера
+            // Позволяет проиндексировать все контроллеры в сервисе и сформировать по ним мета-данные
+            services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "WebStore.API",
+                    Version = "v1"
+                });
 
+                const string webDomainXML = "WebStore.Domain.xml";
+                const string webApiXml = "WebStore.ServiceHosting.xml";
+                const string debugPath = "bin/debug/netcoreapp3.1";
+
+                opt.IncludeXmlComments(webApiXml);
+
+                if (File.Exists(webDomainXML))
+                    opt.IncludeXmlComments(webDomainXML);
+                else if (File.Exists(Path.Combine(debugPath, webDomainXML)))
+                    opt.IncludeXmlComments(Path.Combine(debugPath, webDomainXML));
+
+
+            });
 
             services.AddControllers();
 
@@ -88,8 +113,11 @@ namespace WebStore.ServiceHosting
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, WebStoreDBInitializer db, ILoggerFactory log)
         {
+            log.AddLog4Net();
+            db.Initialize();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -100,6 +128,14 @@ namespace WebStore.ServiceHosting
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(opt =>
+            {
+                // Устанавливаем путь, по которому будет доступна документация по сваггеру
+                opt.SwaggerEndpoint("/swagger/v1/swagger.json", "WebStore.API");
+                opt.RoutePrefix = string.Empty;
+            });
 
             app.UseEndpoints(endpoints =>
             {
