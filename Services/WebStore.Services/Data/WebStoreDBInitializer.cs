@@ -198,7 +198,7 @@ namespace WebStore.Services.Data
                 {
                     _logger.LogInformation("Пользователь {0} добавлен", User.Administrator);
                     await _UserManager.AddToRoleAsync(admin, Role.Administrator);
-                    _logger.LogInformation("Пользователю {0} добавлена роль {1}", Role.Administrator)
+                    _logger.LogInformation("Пользователю {0} добавлена роль {1}", Role.Administrator);
                 }
                 else
                 {
