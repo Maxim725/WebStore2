@@ -113,7 +113,9 @@ namespace WebStore.Service.Tests.Products
 
             const int expectedId = 5;
 
+
             _cartService.AddToCart(expectedId);
+
 
             Assert.Equal(1, _cart.ItemsCount);
             Assert.Single(_cart.Items);
