@@ -29,6 +29,14 @@ namespace WebStore.Clients.Products
         public ProductDTO GetProductById(int id)
             => Get<ProductDTO>($"{_serviceAddress}/{id}");
 
+        public SectionDTO GetSectionById(int id)
+        {
+            return Get<SectionDTO>($"{_serviceAddress}/sections/{id}");
+        }
 
+        public BrandDTO GetBrandById(int id)
+        {
+            return Get<BrandDTO>($"{_serviceAddress}/brands/{id}");
+        }
     }
 }

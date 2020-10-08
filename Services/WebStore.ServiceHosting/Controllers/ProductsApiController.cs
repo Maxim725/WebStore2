@@ -45,5 +45,16 @@ namespace WebStore.ServiceHosting.Controllers
             return products.GetProducts(Filter);
         }
 
+        [HttpGet("sections/{id}")]
+        public SectionDTO GetSectionById(int id)
+        {
+            return products.GetSectionById(id);
+        }
+
+        [HttpGet("brands/{id}")]
+        public BrandDTO GetBrandById(int id)
+        {
+            return products.GetBrandById(id);
+        }
     }
 }

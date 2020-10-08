@@ -29,5 +29,15 @@ namespace WebStore.Services.Products.InMemory
         }
 
         public ProductDTO GetProductById(int id) => TestData.Products.FirstOrDefault(p => p.Id == id).ToDTO();
+
+        public SectionDTO GetSectionById(int id)
+        {
+            return null;
+        }
+
+        public BrandDTO GetBrandById(int id)
+        {
+            return null;
+        }
     }
 }
