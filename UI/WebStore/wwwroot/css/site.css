@@ -2518,6 +2518,13 @@ h2.title {
     color: #FE980F;
 }
 
+.panel-body ul li.active {
+    text-decoration: underline;
+}
+
+.brands-name ul li.active{
+    text-decoration: underline;
+}
 /*!
  * Slider for Bootstrap
  *
