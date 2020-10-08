@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebStore.Domain.ViewModels;
 using WebStore.Interfaces.Services;
+using WebStore.Services.Mapping;
 
 namespace WebStore.Components
 {
@@ -20,15 +21,20 @@ namespace WebStore.Components
         {
             var model = new BreadCrumbViewModel();
 
-            // Извлечение данных модели и по секции по их идентификаторам
-            if(int.TryParse(ViewContext.RouteData.Values["id"]?.ToString(), out var productId))
+            if (int.TryParse(Request.Query["sectionId"], out var sectionId))
+                model.Section = _productData.GetSectionById(sectionId).FromDTO();
+
+            if (int.TryParse(Request.Query["brandId"], out var brandId))
+                model.Brand = _productData.GetBrandById(brandId).FromDTO();
+
+            if (int.TryParse(ViewContext.RouteData.Values["id"]?.ToString(), out var productId))
             {
                 var product = _productData.GetProductById(productId);
 
                 if (product != null)
                     model.Product = product.Name;
             }
-            return View();
+            return View(model);
         }
     }
 }
