@@ -10,6 +10,6 @@ namespace WebStore.Domain.ViewModels
 
         public int? CurrentSectionId { get; set; }
 
-        public int? ParentSectionId
+        public int? ParentSectionId { get; set; }
     }
 }
