@@ -82,6 +82,7 @@ namespace WebStore.ServiceHosting
 
             // Сервис нужен для работы корзины
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<ICartStore, CookiesCartStore>();
 
             // Добавление сервисов сваггера
             // Позволяет проиндексировать все контроллеры в сервисе и сформировать по ним мета-данные
