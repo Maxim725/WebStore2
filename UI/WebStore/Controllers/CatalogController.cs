@@ -1,24 +1,39 @@
-﻿using System.Linq;
+﻿
+using System.Linq;
+using AutoMapper.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using WebStore.Domain;
 using WebStore.Domain.ViewModels;
 using WebStore.Interfaces.Services;
 using WebStore.Services.Mapping;
+using Microsoft.Extensions.Configuration;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace WebStore.Controllers
 {
     public class CatalogController : Controller
     {
         private readonly IProductData _ProductData;
+        private readonly IConfiguration _configuration;
 
-        public CatalogController(IProductData ProductData) => _ProductData = ProductData;
-
-        public IActionResult Shop(int? BrandId, int? SectionId)
+        public CatalogController(IProductData ProductData, IConfiguration configuration)
         {
+            _ProductData = ProductData;
+            _configuration = configuration;
+        }
+
+        public IActionResult Shop(int? brandId, int? sectionId, int page = 1)
+        {
+            var pageSize = int.TryParse(_configuration["PageSize"], out var size)
+                ? size
+                : (int?)null;
+
             var filter = new ProductFilter
             {
-                BrandId = BrandId,
-                SectionId = SectionId
+                BrandId = brandId,
+                SectionId = sectionId,
+                Page = page,
+                PageSize = pageSize
             };
 
             var products = _ProductData.GetProducts(filter);
