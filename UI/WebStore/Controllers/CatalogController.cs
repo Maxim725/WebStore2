@@ -40,9 +40,9 @@ namespace WebStore.Controllers
 
             return View(new CatalogViewModel
             {
-                SectionId = SectionId,
-                BrandId = BrandId,
-                Products = products.FromDTO().ToView().OrderBy(p => p.Order)
+                SectionId = brandId,
+                BrandId = sectionId,
+                Products = products.Products.FromDTO().ToView().OrderBy(p => p.Order)
             });
         }
 

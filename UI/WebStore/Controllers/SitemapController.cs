@@ -29,7 +29,7 @@ namespace WebStore.Controllers
             foreach(var brand in productData.GetBrands())
                 nodes.Add(new SitemapNode(Url.Action("Shop", "Catalog", new { BrandId = brand.Id })));
 
-            foreach (var products in productData.GetProducts())
+            foreach (var products in productData.GetProducts().Products)
                 nodes.Add(new SitemapNode(Url.Action("Details", "Catalog", new { products.Id })));
 
             return new SitemapProvider().CreateSitemap(new SitemapModel(nodes));

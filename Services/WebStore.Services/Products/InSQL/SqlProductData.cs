@@ -27,24 +27,35 @@ namespace WebStore.Services.Products.InSQL
             .FirstOrDefault()
             .ToDTO();
 
-        public IEnumerable<ProductDTO> GetProducts(ProductFilter Filter = null)
+        public PageProductsDTO GetProducts(ProductFilter filter = null)
         {
             IQueryable<Product> query = _db.Products
                .Include(product => product.Brand)
                .Include(product => product.Section);
 
-            if (Filter?.Ids?.Length > 0)
-                query = query.Where(product => Filter.Ids.Contains(product.Id));
+            if (filter?.Ids?.Length > 0)
+                query = query.Where(product => filter.Ids.Contains(product.Id));
             else
             {
-                if (Filter?.BrandId != null)
-                    query = query.Where(product => product.BrandId == Filter.BrandId);
+                if (filter?.BrandId != null)
+                    query = query.Where(product => product.BrandId == filter.BrandId);
 
-                if (Filter?.SectionId != null)
-                    query = query.Where(product => product.SectionId == Filter.SectionId);
+                if (filter?.SectionId != null)
+                    query = query.Where(product => product.SectionId == filter.SectionId);
             }
 
-            return query.ToDTO()/*.ToArray()*/;
+            var totalCount = query.Count();
+
+            if (filter?.PageSize > 0)
+                query = query
+                    .Skip((filter.Page - 1) * (int)filter.PageSize)
+                    .Take((int)filter.PageSize);
+
+            return new PageProductsDTO
+            {
+                Products = query.ToDTO(),/*.ToArray()*/
+                TotalCount = totalCount
+            };
         }
 
         public ProductDTO GetProductById(int id) => _db.Products
