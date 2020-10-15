@@ -25,6 +25,7 @@ using WebStore.Services.Products.InSQL;
 using WebStore.Logger;
 using WebStore.Infrastructure.Middleware;
 using WebStore.Services.Products;
+using WebStore.Hubs;
 
 namespace WebStore
 {
@@ -36,6 +37,8 @@ namespace WebStore
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
+
             services.AddIdentity<User, Role>(opt => {  })
                .AddDefaultTokenProviders();
 
@@ -132,6 +135,7 @@ namespace WebStore
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<InformationHub>("/info");
                 endpoints.MapGet("/greetings", async context =>
                 {
                     await context.Response.WriteAsync(_Configuration["CustomGreetings"]);
