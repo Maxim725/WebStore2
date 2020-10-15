@@ -114,5 +114,11 @@ namespace WebStore.Controllers
         }
 
         public IActionResult AccessDenied() => View();
+
+        public async Task<IActionResult> IsNameFree(string userName)
+        {
+            var user = await _UserManager.FindByNameAsync(userName);
+            return Json(user is null ? "true" : "Пользователь с таким именем уже существует");
+        }
     }
 }

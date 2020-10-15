@@ -10,33 +10,33 @@ namespace WebStore.Controllers
 {
     public class CartController : Controller
     {
-        private readonly ICartService _CartService;
+        private readonly ICartService _cartService;
 
-        public CartController(ICartService CartService) => _CartService = CartService;
+        public CartController(ICartService CartService) => _cartService = CartService;
 
-        public IActionResult Details() => View(new CartOrderViewModel { Cart = _CartService.TransformFromCart() });
+        public IActionResult Details() => View(new CartOrderViewModel { Cart = _cartService.TransformFromCart() });
 
         public IActionResult AddToCart(int id)
         {
-            _CartService.AddToCart(id);
+            _cartService.AddToCart(id);
             return RedirectToAction(nameof(Details));
         }
 
         public IActionResult DecrementFromCart(int id)
         {
-            _CartService.DecrementFromCart(id);
+            _cartService.DecrementFromCart(id);
             return RedirectToAction(nameof(Details));
         }
 
         public IActionResult RemoveFromCart(int id)
         {
-            _CartService.RemoveFromCart(id);
+            _cartService.RemoveFromCart(id);
             return RedirectToAction(nameof(Details));
         }
 
         public IActionResult Clear()
         {
-            _CartService.Clear();
+            _cartService.Clear();
             return RedirectToAction(nameof(Details));
         }
 
@@ -46,14 +46,14 @@ namespace WebStore.Controllers
             if (!ModelState.IsValid)
                 return View(nameof(Details), new CartOrderViewModel
                 {
-                    Cart = _CartService.TransformFromCart(),
+                    Cart = _cartService.TransformFromCart(),
                     Order = OrderModel
                 });
 
             var orderModel = new CreateOrderModel
             {
                 Order = OrderModel,
-                Items = _CartService.TransformFromCart().Items
+                Items = _cartService.TransformFromCart().Items
                             .Select(i => new OrderItemDTO
                             {
                                 Id = i.Product.Id,
@@ -63,7 +63,7 @@ namespace WebStore.Controllers
             };
             var order = await OrderService.CreateOrder(User.Identity.Name, orderModel);
 
-            _CartService.Clear();
+            _cartService.Clear();
 
             return RedirectToAction(nameof(OrderConfirmed), new { id = order.Id });
         }
@@ -73,5 +73,37 @@ namespace WebStore.Controllers
             ViewBag.OrderId = id;
             return View();
         }
+
+        #region API
+        public IActionResult AddToCartAPI(int id)
+        {
+            _cartService.AddToCart(id);
+            // Если наследуемся от Controller (то есть не API)
+            //return Json(new {  id, message = $"Товар с id:{id} был добавлен в корзину"}) 
+
+            // Если API, то
+            return new JsonResult(new { id, message = $"Товар с id:{id} был добавлен в корзину" });
+        }
+
+        public IActionResult DecrementFromCartAPI(int id)
+        {
+            _cartService.DecrementFromCart(id);
+            return Ok();
+        }
+
+        public IActionResult RemoveFromCartAPI(int id)
+        {
+            _cartService.RemoveFromCart(id);
+            return Ok();
+        }
+
+        public IActionResult ClearAPI()
+        {
+            _cartService.Clear();
+            return Ok();
+        }
+
+        public IActionResult GetCartView() => ViewComponent("Cart");
+        #endregion
     }
 }

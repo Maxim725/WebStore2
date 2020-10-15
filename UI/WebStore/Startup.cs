@@ -24,6 +24,8 @@ using WebStore.Services.Products.InCookies;
 using WebStore.Services.Products.InSQL;
 using WebStore.Logger;
 using WebStore.Infrastructure.Middleware;
+using WebStore.Services.Products;
+using WebStore.Hubs;
 
 namespace WebStore
 {
@@ -35,6 +37,8 @@ namespace WebStore
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
+
             services.AddIdentity<User, Role>(opt => {  })
                .AddDefaultTokenProviders();
 
@@ -91,8 +95,9 @@ namespace WebStore
                .AddRazorRuntimeCompilation();
 
             services.AddScoped<IEmployeesData, EmployeesClient>();
-            services.AddScoped<IProductData, ProductsClient>();
+            services.AddScoped<ICartStore, CookiesCartStore>();
             services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IProductData, ProductsClient>();
             services.AddScoped<IOrderService, OrdersClient>();
             services.AddScoped<IValueService, ValuesClient>();
         }
@@ -107,7 +112,7 @@ namespace WebStore
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
-            app.UseMiddleware<ErrorHandlingMIddleware>();
+            //app.UseMiddleware<ErrorHandlingMIddleware>();
 
             app.UseStaticFiles();
             app.UseDefaultFiles();
@@ -130,6 +135,8 @@ namespace WebStore
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<InformationHub>("/info");
+
                 endpoints.MapGet("/greetings", async context =>
                 {
                     await context.Response.WriteAsync(_Configuration["CustomGreetings"]);

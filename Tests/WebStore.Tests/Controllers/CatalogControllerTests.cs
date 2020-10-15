@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper.Configuration;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
@@ -12,6 +13,7 @@ using WebStore.Domain.DTO.Products;
 using WebStore.Domain.ViewModels;
 using WebStore.Interfaces.Services;
 
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 using Assert = Xunit.Assert;
 
 namespace WebStore.Tests.Controllers
@@ -54,7 +56,10 @@ namespace WebStore.Tests.Controllers
                     }
                 });
 
-            var controller = new CatalogController(productDataMock.Object);
+            var configurationMock = new Mock<IConfiguration>();
+            configurationMock.Setup(cfg => cfg[It.IsAny<string>()])
+                .Returns("3");
+            var controller = new CatalogController(productDataMock.Object, configurationMock.Object);
 
             #endregion
 
@@ -123,12 +128,19 @@ namespace WebStore.Tests.Controllers
 
             productDataMock
                 .Setup(p => p.GetProducts(It.IsAny<ProductFilter>()))
-                .Returns(products);
+                .Returns(new PageProductsDTO
+                {
+                    Products = products,
+                    TotalCount = products.Length
+                });
 
             const int expectedSectionId = 1;
             const int expectedBrandId = 5;
 
-            var controller = new CatalogController(productDataMock.Object);
+            var configurationMock = new Mock<IConfiguration>();
+            configurationMock.Setup(cfg => cfg[It.IsAny<string>()])
+                .Returns("3");
+            var controller = new CatalogController(productDataMock.Object, configurationMock.Object);
 
             var result = controller.Shop(expectedBrandId, expectedSectionId);
 

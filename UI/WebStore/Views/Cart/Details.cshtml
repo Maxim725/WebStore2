@@ -5,12 +5,7 @@
 
 <section id="cart_items">
     <div class="container">
-        <div class="breadcrumbs">
-            <ol class="breadcrumb">
-                <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                <li class="active">Корзина</li>
-            </ol>
-        </div>
+        
         <div class="table-responsive cart_info">
             <table class="table table-condensed">
                 <thead>
@@ -38,7 +33,7 @@
                                 </h4>
                                 <p>Артикул: @product.Id.ToString("0000000")</p>
                             </td>
-                            <td class="cart_price">
+                            <td class="cart_price" data-price="@product.Price">
                                 <p>@product.Price.ToString("C")</p>
                             </td>
                             <td class="cart_quantity">
@@ -46,6 +41,7 @@
                                     <a asp-controller="Cart"
                                        asp-action="AddToCart"
                                        asp-route-id="@product.Id"
+                                       data-id="@product.Id"
                                        class="cart_quantity_up">
                                          +
                                     </a>
@@ -58,18 +54,20 @@
                                     <a asp-controller="Cart"
                                        asp-action="DecrementFromCart"
                                        asp-route-id="@product.Id"
+                                       data-id="@product.Id"
                                        class="cart_quantity_down">
                                          -
                                     </a>
                                 </div>
                             </td>
-                            <td class="cart_total">
+                            <td class="cart_total" data-price="@(product.Price * quantity)">
                                 <p class="cart_total_price">@((product.Price * quantity).ToString("C"))</p>
                             </td>
                             <td class="cart_delete">
                                 <a asp-controller="Cart"
                                    asp-action="RemoveFromCart"
                                    asp-route-id="@product.Id"
+                                   data-id="@product.Id"
                                    class="cart_quantity_delete">
                                     <i class="fa fa-times"></i>
                                 </a>

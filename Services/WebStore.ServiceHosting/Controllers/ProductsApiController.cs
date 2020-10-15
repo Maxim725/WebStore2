@@ -40,10 +40,21 @@ namespace WebStore.ServiceHosting.Controllers
         }
 
         [HttpPost]
-        public IEnumerable<ProductDTO> GetProducts([FromBody] ProductFilter Filter = null)
+        public PageProductsDTO GetProducts([FromBody] ProductFilter Filter = null)
         {
             return products.GetProducts(Filter);
         }
 
+        [HttpGet("sections/{id}")]
+        public SectionDTO GetSectionById(int id)
+        {
+            return products.GetSectionById(id);
+        }
+
+        [HttpGet("brands/{id}")]
+        public BrandDTO GetBrandById(int id)
+        {
+            return products.GetBrandById(id);
+        }
     }
 }

@@ -15,19 +15,40 @@ namespace WebStore.Services.Products.InMemory
 
         public IEnumerable<BrandDTO> GetBrands() => TestData.Brands.Select(b => b.ToDTO());
 
-        public IEnumerable<ProductDTO> GetProducts(ProductFilter Filter = null)
+        public PageProductsDTO GetProducts(ProductFilter filter = null)
         {
             var query = TestData.Products;
 
-            if (Filter?.SectionId != null)
-                query = query.Where(product => product.SectionId == Filter.SectionId);
+            if (filter?.SectionId != null)
+                query = query.Where(product => product.SectionId == filter.SectionId);
 
-            if (Filter?.BrandId != null)
-                query = query.Where(product => product.BrandId == Filter.BrandId);
+            if (filter?.BrandId != null)
+                query = query.Where(product => product.BrandId == filter.BrandId);
 
-            return query.ToDTO();
+            var totalCount = query.Count();
+
+            if (filter?.PageSize > 0)
+                query = query
+                    .Skip((filter.Page - 1) * (int)filter.PageSize)
+                    .Take((int)filter.PageSize);
+
+            return new PageProductsDTO
+            {
+                Products = query.ToDTO(),/*.ToArray()*/
+                TotalCount = totalCount
+            };
         }
 
         public ProductDTO GetProductById(int id) => TestData.Products.FirstOrDefault(p => p.Id == id).ToDTO();
+
+        public SectionDTO GetSectionById(int id)
+        {
+            return null;
+        }
+
+        public BrandDTO GetBrandById(int id)
+        {
+            return null;
+        }
     }
 }
