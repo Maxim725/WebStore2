@@ -13,8 +13,6 @@ namespace WebStore.TagHelpers
 {
     public class PagingTagHelper : TagHelper
     {
-        private readonly IUrlHelperFactory _urlHelperFactory;
-
         [ViewContext, HtmlAttributeNotBound]
         public ViewContext ViewContext { get; set; }
 
@@ -26,36 +24,38 @@ namespace WebStore.TagHelpers
         public Dictionary<string, object> PageUrlValues { get; set; }
             = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
-        public PagingTagHelper(IUrlHelperFactory urlHelperFactory)
-        {
-            _urlHelperFactory = urlHelperFactory;
-        }
         
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             var ul = new TagBuilder("ul");
             ul.AddCssClass("pagination");
 
-            var urlHelper = _urlHelperFactory.GetUrlHelper(ViewContext);
             for(int i = 1, totalPages = PageModel.TotalPage; i < totalPages; i++)
             {
-                ul.InnerHtml.AppendHtml(CreateItem(i, urlHelper));
+                ul.InnerHtml.AppendHtml(CreateItem(i));
             }
 
             output.Content.AppendHtml(ul);
         }
 
-        public TagBuilder CreateItem(int PageNumber, IUrlHelper url)
+        public TagBuilder CreateItem(int PageNumber)
         {
             var li = new TagBuilder("li");
             var a = new TagBuilder("a");
 
             if (PageNumber == PageModel.PageNumber)
+            {
+                a.MergeAttribute("data-page", PageModel.PageNumber.ToString());
                 li.AddCssClass("active");
+            }
             else
             {
                 PageUrlValues["page"] = PageNumber;
-                a.Attributes["href"] = url.Action(PageAction, PageUrlValues);
+                a.Attributes["href"] = "#"; /* url.Action(PageAction, PageUrlValues);*/
+                foreach(var(key, value) in PageUrlValues.Where(v => v.Value != null))
+                {
+                    a.MergeAttribute($"data-{key}", value.ToString());
+                }
             }
 
             a.InnerHtml.AppendHtml(PageNumber.ToString());
