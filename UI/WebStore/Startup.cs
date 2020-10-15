@@ -136,6 +136,7 @@ namespace WebStore
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<InformationHub>("/info");
+
                 endpoints.MapGet("/greetings", async context =>
                 {
                     await context.Response.WriteAsync(_Configuration["CustomGreetings"]);
